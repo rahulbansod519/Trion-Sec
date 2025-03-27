@@ -24,7 +24,4 @@ logging.basicConfig(
 for noisy_logger in ["urllib3", "kubernetes"]:
     logging.getLogger(noisy_logger).setLevel(logging.WARNING)
 
-def save_credentials(api_server, token):
-    keyring.set_password("kube-sec", "API_SERVER", api_server)
-    keyring.set_password("kube-sec", "KUBE_TOKEN", token)
-    print("🔐 Credentials saved securely using system keyring.")
+
