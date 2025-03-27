@@ -26,7 +26,8 @@ pip install kube-sec
 Connect to a Kubernetes Cluster
 Use the connect command to authenticate and connect to your Kubernetes cluster. You can authenticate using either a Service Account token or kubeconfig.
 
-Connect using a Service Account token
+Connect using a Service Account token {[Account Setup](https://github.com/rahulbansod519/Trion-Sec/blob/main/k8_config.yaml)
+}
 ```bash
 kube-sec connect https://<API_SERVER> --token-path <API_TOKEN_PATH> --ca-cert-path <CA_CERT_PATH>
 ```
