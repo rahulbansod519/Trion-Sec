@@ -127,13 +127,23 @@ def disconnect():
 @click.option('--disable-checks', '-d', multiple=True, help="Disable specific checks (e.g., --disable-checks privileged-containers)")
 @click.option('--output-format', '-o', type=click.Choice(["json", "yaml"], case_sensitive=False), help="Export report format")
 @click.option('--custom-rules', type=click.Path(exists=True), help="Path to a YAML file with custom resource validation rules")
+@click.option('--async', 'use_async', is_flag=True, help="Use the new async scanner engine (experimental)")
 @click.option('--schedule', '-s', "schedule_option", type=click.Choice(["daily", "weekly"], case_sensitive=False), help="Schedule security scans automatically")
-def scan(disable_checks, output_format, custom_rules, schedule_option):
+def scan(disable_checks, output_format, custom_rules, schedule_option, use_async):
     """Run the Kubernetes security scan."""
     if not is_session_active():
         click.secho("❌ No active session found. Please run `kube-sec connect` first.", fg="red", bold=True)
         logging.warning("Scan attempt blocked: no active session.")
         return
+    if use_async:
+        try:
+            from kube_secure.async_scanner import async_run_scan
+            import asyncio
+            asyncio.run(async_run_scan(disable_checks, output_format, custom_rules))
+            return
+        except ImportError:
+            click.secho("⚠️ Async scanner not available. Please implement or check async_scanner.py", fg="yellow")
+            return
 
     if not output_format:
         click.secho("\n🚀 Starting Kubernetes Security Scan...\n", fg="cyan", bold=True)
