@@ -1,6 +1,7 @@
-# Kube-Secure: Kubernetes Security Hardening CLI
+# Kube-Sec
+Python-based CLI that performs security checks across your Kubernetes cluster to flag potential risks and misconfigurations.
 
-Kube-Secure is a security hardening tool for Kubernetes clusters. It helps identify security risks and misconfigurations within your Kubernetes environment by performing various security checks. This tool is designed to ensure your Kubernetes clusters are secure by scanning for issues such as privileged containers, root user pods, exposed services, and more.
+Kube-Sec helps identify security risks and misconfigurations within your Kubernetes environment by performing various security checks. This tool is designed to ensure your Kubernetes clusters are secure by scanning for issues such as privileged containers, root user pods, exposed services, and more.
 
 ## Features
 
