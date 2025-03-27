@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name="kube-sec",
-    version="0.1.0",
+    version="1.1.0",
     description="A Kubernetes Security Hardening CLI with built-in and custom rule checks",
     author="Rahul Bansod",
     author_email="rahulbansod519@email.com",
-    url="https://github.com/rahulbansod519/Kube-Sec.git", 
+    url="https://github.com/rahulbansod519/Trion-Sec.git", 
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
