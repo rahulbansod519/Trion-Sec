@@ -22,7 +22,7 @@ def test_cluster_connection(api_server=None, token=None, ssl_verify=False, ca_ce
         configuration.verify_ssl = ssl_verify
 
         if ca_cert_path and ssl_verify:
-            print(ca_cert_path)
+        
             configuration.ssl_ca_cert = ca_cert_path
         if token:
             configuration.api_key = {"authorization": "Bearer " + token}
