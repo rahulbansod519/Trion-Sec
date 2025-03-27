@@ -24,6 +24,7 @@ def require_cluster_connection(func):
     return wrapper
 
 def load_k8():
+    """Load Kubernetes config based on connection method stored in session."""
     connection_method = get_connection_method()
     try:
         if connection_method == "kubeconfig":
@@ -34,11 +35,16 @@ def load_k8():
             api_server = keyring.get_password("kube-sec", "api_server")
             token = keyring.get_password("kube-sec", "kube_token")
             ssl_verify_str = keyring.get_password("kube-sec", "SSL_VERIFY")
-            ssl_verify = ssl_verify_str.lower() == "true"
+            ca_cert_path = keyring.get_password("kube-sec", "CA_CERT_PATH")  # 🔍 New line
+        
+            ssl_verify = ssl_verify_str and ssl_verify_str.lower() == "true"
 
             configuration = client.Configuration()
             configuration.host = api_server
             configuration.verify_ssl = ssl_verify
+            if ssl_verify and ca_cert_path:
+                configuration.ssl_ca_cert = ca_cert_path  # ✅ Use CA certificate
+
             configuration.api_key = {"authorization": "Bearer " + token}
             client.Configuration.set_default(configuration)
             logging.info("Loaded Kubernetes configuration using token-based credentials.")
@@ -49,6 +55,7 @@ def load_k8():
     except Exception as e:
         logging.error(f"❌ Failed to load Kubernetes configuration: {e}")
         return False
+
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
 @require_cluster_connection
