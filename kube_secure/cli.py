@@ -46,8 +46,9 @@ def cli():
 @click.option('--token-path', type=click.Path(exists=True), help="Path to file containing the API token")
 @click.option('--token', help="API token string")
 @click.option('--insecure', is_flag=True, help="Disable SSL verification (Not recommended)")
+@click.option('--ca-cert-path', type=click.Path(exists=True), help="Path to CA certificate for verifying the Kubernetes API server")
 @click.option('--kubeconfig', is_flag=True, help="Use kubeconfig for authentication")
-def connect(api_server, token_path, token, insecure, kubeconfig):
+def connect(api_server, token_path, token, insecure, ca_cert_path, kubeconfig):
     """Connect to a Kubernetes cluster with token-based credentials or kubeconfig."""
     if is_session_active():
         click.secho("🔁 You are already connected to the cluster.", fg="yellow")
@@ -55,21 +56,21 @@ def connect(api_server, token_path, token, insecure, kubeconfig):
         return
 
     if kubeconfig:
-        # Use kubeconfig for authentication
         if connect_to_cluster(kubeconfig=True):
             set_session_active("kubeconfig")
             click.secho("✅ Cluster authenticated successfully using kubeconfig.", fg="green")
-            logging.info("Cluster authenticated successfully using kubeconfig.")
             return
         else:
             click.secho("❌ Failed to authenticate using kubeconfig.", fg="red")
             return
 
-    # If no kubeconfig, use token-based authentication
-    if not api_server and not token and not token_path:
-        click.echo("❌ Provide --api-server and --token or --token-path.")
-        logging.error("Connect failed: API server and token are missing.")
+    if not kubeconfig and (not api_server or (not token and not token_path)):
+        click.secho("❌ No credentials provided.", fg="red", bold=True)
+        click.echo("   → Use --api-server with --token or --token-path")
+        click.echo("   → Or use --kubeconfig for automatic kubeconfig authentication")
+        logging.error("Connect failed: missing credentials or kubeconfig.")
         return
+
 
     if token_path and token:
         click.echo("❌ Provide either --token-path or --token, not both.")
@@ -85,14 +86,15 @@ def connect(api_server, token_path, token, insecure, kubeconfig):
         logging.warning("Connect command error: token not provided.")
         return
 
-    # Attempt to connect using token-based authentication
-    if not connect_to_cluster(api_server, token, ssl_verify=not insecure):
+    if not connect_to_cluster(api_server, token, ssl_verify=not insecure, ca_cert_path=ca_cert_path):
         click.secho("❌ Cluster connection failed. Aborting.", fg="red")
         return
 
-    set_session_active("token")  # Save connection method as token
+    set_session_active("token")
     click.secho("🔐 Connected to the cluster.", fg="green")
     logging.info("Connected to cluster successfully.")
+
+
 @click.command()
 def disconnect():
     """Disconnect from the Kubernetes cluster."""
