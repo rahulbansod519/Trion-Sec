@@ -1,0 +1,30 @@
+Recommendation for Free vs Paid Model:
+Free Tier:
+
+Custom rule support (basic resources like Pods, Deployments, etc.)
+
+Basic error handling and rule validation
+
+Small-scale scanning with some filtering options
+
+Basic report generation (text-based)
+
+Limited support (community-driven support or forum access)
+
+Paid Tier:
+
+Advanced custom rule support (regex, logical conditions)
+
+Full resource support (Pods, Services, ConfigMaps, Secrets, etc.)
+
+Asynchronous scanning with parallel execution
+
+Advanced reporting (PDF, HTML with detailed remediation)
+
+Full-scale scanning (unlimited resources)
+
+Integration with CI/CD pipelines and API
+
+Premium support (24/7 with SLA)
+
+Advanced RBAC and audit log management
