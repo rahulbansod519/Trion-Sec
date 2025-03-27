@@ -127,8 +127,7 @@ def disconnect():
 @click.option('--disable-checks', '-d', multiple=True, help="Disable specific checks (e.g., --disable-checks privileged-containers)")
 @click.option('--output-format', '-o', type=click.Choice(["json", "yaml"], case_sensitive=False), help="Export report format")
 @click.option('--custom-rules', type=click.Path(exists=True), help="Path to a YAML file with custom resource validation rules")
-@click.option('--schedule', '-s', "schedule_option", type=click.Choice(["daily", "weekly"], case_sensitive=False), help="Schedule security scans automatically")
-def scan(disable_checks, output_format, custom_rules, schedule_option):
+def scan(disable_checks, output_format, custom_rules):
     """Run the Kubernetes security scan."""
     if not is_session_active():
         click.secho("❌ No active session found. Please run `kube-sec connect` first.", fg="red", bold=True)
@@ -286,27 +285,7 @@ def scan(disable_checks, output_format, custom_rules, schedule_option):
                     yaml.dump(data, file, default_flow_style=False, sort_keys=False)
                 logging.info("Security report saved as YAML.")
 
-    if schedule_option:
-        schedule_times = {"daily": "02:00", "weekly": "03:00"}
-        scan_time = schedule_times.get(schedule_option)
-
-        if schedule_option == "daily":
-            schedule.every().day.at(scan_time).do(run_scan)
-        elif schedule_option == "weekly":
-            schedule.every().monday.at(scan_time).do(run_scan)
-
-        click.echo(f"\n📅 Scheduled scan set to run {schedule_option} at {scan_time}. Running in background.")
-        logging.info(f"Scheduled scan set to run {schedule_option} at {scan_time}.")
-
-        def background_scheduler():
-            while True:
-                schedule.run_pending()
-                time.sleep(60)
-
-        thread = threading.Thread(target=background_scheduler, daemon=True)
-        thread.start()
-    else:
-        run_scan()
+    run_scan()
 
 cli.add_command(scan)
 cli.add_command(connect)
